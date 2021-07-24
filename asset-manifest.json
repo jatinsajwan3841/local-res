@@ -1,22 +1,25 @@
 {
   "files": {
-    "main.css": "/local-res/static/css/main.6dea0f05.chunk.css",
-    "main.js": "/local-res/static/js/main.eb943fe9.chunk.js",
-    "main.js.map": "/local-res/static/js/main.eb943fe9.chunk.js.map",
-    "runtime-main.js": "/local-res/static/js/runtime-main.9ec89de5.js",
-    "runtime-main.js.map": "/local-res/static/js/runtime-main.9ec89de5.js.map",
-    "static/js/2.6a90a25c.chunk.js": "/local-res/static/js/2.6a90a25c.chunk.js",
-    "static/js/2.6a90a25c.chunk.js.map": "/local-res/static/js/2.6a90a25c.chunk.js.map",
-    "static/js/3.75996469.chunk.js": "/local-res/static/js/3.75996469.chunk.js",
-    "static/js/3.75996469.chunk.js.map": "/local-res/static/js/3.75996469.chunk.js.map",
-    "index.html": "/local-res/index.html",
-    "static/css/main.6dea0f05.chunk.css.map": "/local-res/static/css/main.6dea0f05.chunk.css.map",
-    "static/js/2.6a90a25c.chunk.js.LICENSE.txt": "/local-res/static/js/2.6a90a25c.chunk.js.LICENSE.txt"
+    "main.css": "/static/css/main.6dea0f05.chunk.css",
+    "main.js": "/static/js/main.0b1fb13e.chunk.js",
+    "main.js.map": "/static/js/main.0b1fb13e.chunk.js.map",
+    "runtime-main.js": "/static/js/runtime-main.2d49addd.js",
+    "runtime-main.js.map": "/static/js/runtime-main.2d49addd.js.map",
+    "static/js/2.0a43d97e.chunk.js": "/static/js/2.0a43d97e.chunk.js",
+    "static/js/2.0a43d97e.chunk.js.map": "/static/js/2.0a43d97e.chunk.js.map",
+    "static/js/3.efcfbcd3.chunk.js": "/static/js/3.efcfbcd3.chunk.js",
+    "static/js/3.efcfbcd3.chunk.js.map": "/static/js/3.efcfbcd3.chunk.js.map",
+    "index.html": "/index.html",
+    "static/css/main.6dea0f05.chunk.css.map": "/static/css/main.6dea0f05.chunk.css.map",
+    "static/js/2.0a43d97e.chunk.js.LICENSE.txt": "/static/js/2.0a43d97e.chunk.js.LICENSE.txt",
+    "static/js/index.worker.f230213d.worker.js": "/static/js/index.worker.f230213d.worker.js",
+    "static/js/index.worker.f230213d.worker.js.LICENSE.txt": "/static/js/index.worker.f230213d.worker.js.LICENSE.txt",
+    "static/js/index.worker.f230213d.worker.js.map": "/static/js/index.worker.f230213d.worker.js.map"
   },
   "entrypoints": [
-    "static/js/runtime-main.9ec89de5.js",
-    "static/js/2.6a90a25c.chunk.js",
+    "static/js/runtime-main.2d49addd.js",
+    "static/js/2.0a43d97e.chunk.js",
     "static/css/main.6dea0f05.chunk.css",
-    "static/js/main.eb943fe9.chunk.js"
+    "static/js/main.0b1fb13e.chunk.js"
   ]
 }
