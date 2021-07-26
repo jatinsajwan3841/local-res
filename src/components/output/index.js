@@ -10,7 +10,7 @@ import Button from '@material-ui/core/Button'
 import HomeIcon from '@material-ui/icons/Home'
 import LineChart from '../chart'
 
-const Output = ({ name, data, reset }) => {
+const Output = ({ name, data, reset, darkMode }) => {
     return (
         <Container maxWidth="md">
             <Button
@@ -59,7 +59,7 @@ const Output = ({ name, data, reset }) => {
                     </TableBody>
                 </Table>
             </TableContainer>
-            <LineChart data={data} />
+            <LineChart data={data} darkMode={darkMode} />
         </Container>
     )
 }

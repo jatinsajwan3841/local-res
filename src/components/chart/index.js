@@ -2,9 +2,27 @@ import React from 'react'
 import { Chart, registerables } from 'chart.js'
 Chart.register(...registerables)
 
-const LineChart = ({ data }) => {
+const LineChart = ({ data, darkMode }) => {
     const chartRef = React.createRef()
     const targetChartRef = React.useRef()
+
+    React.useEffect(() => {
+        if (targetChartRef.current !== undefined) {
+            if (darkMode) {
+                targetChartRef.current.options.scales.x.grid.color =
+                    'rgba(255, 255, 255, 0.2)'
+                targetChartRef.current.options.scales.y.grid.color =
+                    'rgba(255, 255, 255, 0.2)'
+                targetChartRef.current.update()
+            } else {
+                targetChartRef.current.options.scales.x.grid.color =
+                    'rgba(0, 0, 0, 0.1)'
+                targetChartRef.current.options.scales.y.grid.color =
+                    'rgba(0, 0, 0, 0.1)'
+                targetChartRef.current.update()
+            }
+        }
+    }, [darkMode])
 
     React.useEffect(() => {
         if (targetChartRef.current !== undefined) {
@@ -38,7 +56,7 @@ const LineChart = ({ data }) => {
                 labels: labeldata,
                 datasets: [
                     {
-                        label: 'Percentage in each sem',
+                        label: '% in each sem',
                         data: datadata,
                         backgroundColor: ['rgba(255, 99, 132, 0.3)'],
                         borderColor: [
@@ -57,7 +75,7 @@ const LineChart = ({ data }) => {
                         tension: 0.3,
                     },
                     {
-                        label: 'Total Percentage',
+                        label: 'Total %',
                         data: total_array,
                         backgroundColor: ['rgba(54, 162, 235, 0.3)'],
                         borderColor: ['rgba(54, 162, 235, 1)'],
@@ -67,9 +85,21 @@ const LineChart = ({ data }) => {
             },
             options: {
                 scales: {
+                    x: {
+                        grid: {
+                            color: darkMode
+                                ? 'rgba(255, 255, 255, 0.2)'
+                                : 'rgba(0, 0, 0, 0.1)',
+                        },
+                    },
                     y: {
                         min: 0,
                         beginAtZero: true,
+                        grid: {
+                            color: darkMode
+                                ? 'rgba(255, 255, 255, 0.2)'
+                                : 'rgba(0, 0, 0, 0.1)',
+                        },
                     },
                 },
             },

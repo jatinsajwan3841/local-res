@@ -5,12 +5,15 @@ import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
 import MenuItem from '@material-ui/core/MenuItem'
 import Load from '../load'
+import FormControlLabel from '@material-ui/core/FormControlLabel'
+import Switch from '@material-ui/core/Switch'
 import { makeStyles } from '@material-ui/core/styles'
 import Snackbar from '@material-ui/core/Snackbar'
 import SnackbarContent from '@material-ui/core/SnackbarContent'
 import DoubleArrowIcon from '@material-ui/icons/DoubleArrow'
 import { excelfiles, branches } from '../constant'
 import Output from '../output'
+import { createTheme, ThemeProvider } from '@material-ui/core/styles'
 
 const useStyles = makeStyles((theme) => ({
     beg: {
@@ -25,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }))
 
-const Home = () => {
+const Home = ({ darkMode, setDarkMode }) => {
     const [res, setRes] = React.useState([])
     const bufferFiles = React.useRef([])
     const [showOut, setShowOut] = React.useState(false)
@@ -101,6 +104,12 @@ const Home = () => {
         setShowOut(false)
     }
 
+    const theme = createTheme({
+        palette: {
+            type: darkMode ? 'dark' : 'light',
+        },
+    })
+
     React.useEffect(() => {
         excelfiles.map(async (v, i) => {
             let response = await fetch(v)
@@ -110,7 +119,17 @@ const Home = () => {
     }, [])
 
     return (
-        <>
+        <ThemeProvider theme={theme}>
+            <FormControlLabel
+                control={
+                    <Switch
+                        checked={darkMode}
+                        onChange={() => setDarkMode(!darkMode)}
+                    />
+                }
+                label="Dark Mode"
+                style={{ position: 'absolute', right: 0 }}
+            />
             {!showOut ? (
                 <>
                     {load && <Load />}
@@ -200,9 +219,14 @@ const Home = () => {
                     </Container>
                 </>
             ) : (
-                <Output name={name} data={res} reset={reset} />
+                <Output
+                    name={name}
+                    data={res}
+                    reset={reset}
+                    darkMode={darkMode}
+                />
             )}
-        </>
+        </ThemeProvider>
     )
 }
 export default Home
