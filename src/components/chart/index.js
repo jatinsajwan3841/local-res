@@ -8,17 +8,20 @@ const LineChart = ({ data, darkMode }) => {
 
     React.useEffect(() => {
         if (targetChartRef.current !== undefined) {
+            let repeat = targetChartRef.current.options
             if (darkMode) {
-                targetChartRef.current.options.scales.x.grid.color =
-                    'rgba(255, 255, 255, 0.2)'
-                targetChartRef.current.options.scales.y.grid.color =
-                    'rgba(255, 255, 255, 0.2)'
+                repeat.plugins.legend.labels.color = 'rgba(255, 255, 255, 0.8)'
+                repeat.scales.x.ticks.color = 'rgba(255, 255, 255, 0.8)'
+                repeat.scales.y.ticks.color = 'rgba(255, 255, 255, 0.8)'
+                repeat.scales.x.grid.color = 'rgba(255, 255, 255, 0.2)'
+                repeat.scales.y.grid.color = 'rgba(255, 255, 255, 0.2)'
                 targetChartRef.current.update()
             } else {
-                targetChartRef.current.options.scales.x.grid.color =
-                    'rgba(0, 0, 0, 0.2)'
-                targetChartRef.current.options.scales.y.grid.color =
-                    'rgba(0, 0, 0, 0.2)'
+                repeat.plugins.legend.labels.color = 'rgba(0, 0, 0, 0.8)'
+                repeat.scales.x.ticks.color = 'rgba(0, 0, 0, 0.8)'
+                repeat.scales.y.ticks.color = 'rgba(0, 0, 0, 0.8)'
+                repeat.scales.x.grid.color = 'rgba(0, 0, 0, 0.2)'
+                repeat.scales.y.grid.color = 'rgba(0, 0, 0, 0.2)'
                 targetChartRef.current.update()
             }
         }
@@ -84,8 +87,23 @@ const LineChart = ({ data, darkMode }) => {
                 ],
             },
             options: {
+                plugins: {
+                    legend: {
+                        display: true,
+                        labels: {
+                            color: darkMode
+                                ? 'rgba(255, 255, 255, 0.8)'
+                                : 'rgba(0, 0, 0, 0.8)',
+                        },
+                    },
+                },
                 scales: {
                     x: {
+                        ticks: {
+                            color: darkMode
+                                ? 'rgba(255, 255, 255, 0.8)'
+                                : 'rgba(0, 0, 0, 0.8)',
+                        },
                         grid: {
                             color: darkMode
                                 ? 'rgba(255, 255, 255, 0.2)'
@@ -95,6 +113,11 @@ const LineChart = ({ data, darkMode }) => {
                     y: {
                         min: 0,
                         beginAtZero: true,
+                        ticks: {
+                            color: darkMode
+                                ? 'rgba(255, 255, 255, 0.8)'
+                                : 'rgba(0, 0, 0, 0.8)',
+                        },
                         grid: {
                             color: darkMode
                                 ? 'rgba(255, 255, 255, 0.2)'

@@ -17,7 +17,8 @@ import { createTheme, ThemeProvider } from '@material-ui/core/styles'
 
 const useStyles = makeStyles((theme) => ({
     beg: {
-        marginTop: theme.spacing(10),
+        marginTop: theme.spacing(8),
+        paddingTop: theme.spacing(2),
     },
     form: {
         width: '100%',
@@ -111,11 +112,13 @@ const Home = ({ darkMode, setDarkMode }) => {
     })
 
     React.useEffect(() => {
-        excelfiles.map(async (v, i) => {
-            let response = await fetch(v)
-            let buffer = await response.arrayBuffer()
-            bufferFiles.current = [...bufferFiles.current, buffer]
-        })
+        Promise.all(
+            excelfiles.map(async (v, i) => {
+                let response = await fetch(v)
+                let buffer = await response.arrayBuffer()
+                bufferFiles.current = [...bufferFiles.current, buffer]
+            }),
+        )
     }, [])
 
     return (
@@ -128,6 +131,7 @@ const Home = ({ darkMode, setDarkMode }) => {
                     />
                 }
                 label="Dark Mode"
+                color="primary"
                 style={{ position: 'absolute', right: 0 }}
             />
             {!showOut ? (
@@ -189,7 +193,7 @@ const Home = ({ darkMode, setDarkMode }) => {
                                     inputProps={
                                         branch === 'CE'
                                             ? { min: '180500' }
-                                            : { minlength: '2' }
+                                            : { minLength: '2' }
                                     }
                                     label={
                                         branch === 'CE' ? 'College-ID' : 'Name'
