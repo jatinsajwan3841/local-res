@@ -16,9 +16,9 @@ const LineChart = ({ data, darkMode }) => {
                 targetChartRef.current.update()
             } else {
                 targetChartRef.current.options.scales.x.grid.color =
-                    'rgba(0, 0, 0, 0.1)'
+                    'rgba(0, 0, 0, 0.2)'
                 targetChartRef.current.options.scales.y.grid.color =
-                    'rgba(0, 0, 0, 0.1)'
+                    'rgba(0, 0, 0, 0.2)'
                 targetChartRef.current.update()
             }
         }
@@ -89,7 +89,7 @@ const LineChart = ({ data, darkMode }) => {
                         grid: {
                             color: darkMode
                                 ? 'rgba(255, 255, 255, 0.2)'
-                                : 'rgba(0, 0, 0, 0.1)',
+                                : 'rgba(0, 0, 0, 0.2)',
                         },
                     },
                     y: {
@@ -98,7 +98,7 @@ const LineChart = ({ data, darkMode }) => {
                         grid: {
                             color: darkMode
                                 ? 'rgba(255, 255, 255, 0.2)'
-                                : 'rgba(0, 0, 0, 0.1)',
+                                : 'rgba(0, 0, 0, 0.2)',
                         },
                     },
                 },

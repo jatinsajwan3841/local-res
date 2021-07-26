@@ -2,11 +2,13 @@
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    transition: all 0.3s ease;
 }
 .home {
     flex: 1 0 auto;
     z-index: 10;
     height: max-content;
+    margin-bottom: 20px;
 }
 
 .footer {
@@ -16,6 +18,8 @@
     justify-content: center;
     padding: 10px 0px;
     text-align: center;
+    box-shadow: 2px 3px 20px rgba(0, 0, 0, 0.5);
+    z-index: 10;
 }
 
 .nav-link {
@@ -28,9 +32,10 @@
 
 .main-container.dark {
     background-color: #121212;
-    color: white;
+    color: rgba(255, 255, 255, 0.9);
 }
 
 .dark .footer {
     background-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 2px 3px 20px rgba(255, 255, 255, 0.2);
 }
