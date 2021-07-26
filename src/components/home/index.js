@@ -43,7 +43,6 @@ const Home = () => {
         let sName = name.toLowerCase()
         let nfCount = 0
         let resCount = 0
-        let total = []
         const worker = new Worker()
         bufferFiles.current.map(async (v, i) => {
             worker.postMessage({
@@ -60,16 +59,26 @@ const Home = () => {
             setload(false)
             if (e.data === 'nf') {
                 nfCount++
+                resCount++
                 if (nfCount === 3) {
                     await setRes('nf')
                     worker.terminate()
+                    await setTimeout(() => setRes([]), 4000)
                 }
             } else {
-                await setRes((prevState) => [...prevState, e.data])
+                await setRes((prevState) => [...prevState, e.data[0]])
                 await setShowOut(true)
                 resCount++
-                total = [e.data.marks]
                 if (resCount === excelfiles.length) {
+                    let tmp_total = {
+                        sem: 'Total :',
+                        marks: `${e.data[1][0]} / ${e.data[1][1]}`,
+                        percentage: (
+                            (e.data[1][0] / e.data[1][1]) *
+                            100
+                        ).toFixed(4),
+                    }
+                    setRes((prevState) => [...prevState, tmp_total])
                     worker.terminate()
                 }
             }
@@ -84,6 +93,12 @@ const Home = () => {
 
     const handleNaam = (event) => {
         setname(event.target.value)
+    }
+
+    const reset = () => {
+        setname('')
+        setbranch('Choose')
+        setShowOut(false)
     }
 
     React.useEffect(() => {
@@ -105,7 +120,7 @@ const Home = () => {
                                 vertical: 'top',
                                 horizontal: 'center',
                             }}
-                            open={res === 'nf' ? true : false}
+                            open={res === 'nf'}
                         >
                             <SnackbarContent
                                 style={{ backgroundColor: 'rgba(255,0,0,0.7)' }}
@@ -114,16 +129,15 @@ const Home = () => {
                         </Snackbar>
                         <h2 className={classes.beg}> Hello {name}</h2>
                         <p>
-                            This is a Django - Reactjs based project where
-                            anyone from the batch 2018-22 can have a quick
-                            reference of their performance in different
+                            This is a <s>Django</s> Web worker - Reactjs based
+                            project where anyone from the batch 2018-22 can have
+                            a quick reference of their performance in different
                             semesters by a table indicating minimal necessary
                             things and a graph.
                         </p>
                         <form className={classes.form} onSubmit={submit}>
                             <TextField
                                 name="branch"
-                                id="branch"
                                 error={brer}
                                 select
                                 label="branch"
@@ -152,8 +166,12 @@ const Home = () => {
                                     type={branch === 'CE' ? 'number' : 'text'}
                                     required
                                     fullWidth
-                                    id="name"
                                     name="name"
+                                    inputProps={
+                                        branch === 'CE'
+                                            ? { min: '180500' }
+                                            : { minlength: '2' }
+                                    }
                                     label={
                                         branch === 'CE' ? 'College-ID' : 'Name'
                                     }
@@ -172,7 +190,6 @@ const Home = () => {
                                     type="submit"
                                     variant="contained"
                                     color="primary"
-                                    id="smb"
                                     disabled={load}
                                     startIcon={<DoubleArrowIcon />}
                                 >
@@ -183,7 +200,7 @@ const Home = () => {
                     </Container>
                 </>
             ) : (
-                <Output name={name} data={res} setShowOut={setShowOut} />
+                <Output name={name} data={res} reset={reset} />
             )}
         </>
     )

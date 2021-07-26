@@ -1,5 +1,6 @@
 import XLSX from 'xlsx'
 
+var total = [0, 0]
 onmessage = (e) => {
     if (e.data.command === 'run') {
         let final_res = []
@@ -13,7 +14,7 @@ onmessage = (e) => {
                 let cell_address = { c: C, r: R }
                 let readable = ws[XLSX.utils.encode_cell(cell_address)]
                 try {
-                    let tmp = readable.w.toLowerCase()
+                    let tmp = readable.w.toLowerCase().trim()
                     if (tmp === e.data.name) {
                         //console.log(readable, cell_address)
                         found = cell_address.r
@@ -28,7 +29,7 @@ onmessage = (e) => {
                 let tmp_ca = { c: C, r: 3 }
                 let tmp_res = ws[XLSX.utils.encode_cell(tmp_ca)]
                 try {
-                    let yeah = tmp_res.w.toLowerCase()
+                    let yeah = tmp_res.w.toLowerCase().trim()
                     if (yeah === 'result') {
                         let max_address = { c: C - 1, r: 5 }
                         let max = ws[XLSX.utils.encode_cell(max_address)]
@@ -45,12 +46,14 @@ onmessage = (e) => {
                             marks: `${semMarks} / ${max.v}`,
                             percentage: ((semMarks / max.v) * 100).toFixed(4),
                         }
+                        total[0] += semMarks
+                        total[1] += max.v
                     }
                 } catch (e) {
                     //console.log(e)
                 }
             }
         }
-        postMessage(found !== 'nf' ? final_res : found)
+        postMessage(found !== 'nf' ? [final_res, total] : found)
     }
 }

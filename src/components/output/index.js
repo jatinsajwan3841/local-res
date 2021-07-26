@@ -10,14 +10,15 @@ import Button from '@material-ui/core/Button'
 import HomeIcon from '@material-ui/icons/Home'
 import LineChart from '../chart'
 
-const Output = ({ name, data, setShowOut }) => {
+const Output = ({ name, data, reset }) => {
     return (
         <Container maxWidth="md">
             <Button
                 variant="contained"
                 color="primary"
+                style={{ marginTop: 6 }}
                 startIcon={<HomeIcon />}
-                onClick={() => setShowOut(false)}
+                onClick={reset}
             >
                 Home
             </Button>
