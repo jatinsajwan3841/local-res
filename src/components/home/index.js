@@ -169,10 +169,8 @@ const Home = ({ darkMode, setDarkMode }) => {
                         <h2 className={classes.beg}> Hello {name}</h2>
                         <p>
                             This is a <s>Django</s> Web worker - Reactjs based
-                            project where anyone from the batch 2018-22 can have
-                            a quick reference of their performance in different
-                            semesters by a table indicating minimal necessary
-                            things and a graph.
+                            PWA where anyone from the batch 2018-22 can have a
+                            quick reference of their academic performance.
                         </p>
                         <form className={classes.form} onSubmit={submit}>
                             <TextField
