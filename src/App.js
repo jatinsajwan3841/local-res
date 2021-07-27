@@ -1,4 +1,5 @@
 import React from 'react'
+import { use100vh } from 'react-div-100vh'
 import Home from './components/home'
 import ParticlesBg from 'particles-bg'
 import Footer from './components/footer'
@@ -7,8 +8,12 @@ import './App.css'
 
 const App = () => {
     const [darkMode, setDarkMode] = useStickyState(false, 'darkMode')
+    const height = use100vh()
     return (
-        <div className={`main-container ${darkMode && 'dark'}`}>
+        <div
+            className={`main-container ${darkMode && 'dark'}`}
+            style={{ minHeight: height }}
+        >
             <div className="home">
                 <Home darkMode={darkMode} setDarkMode={setDarkMode} />
             </div>
