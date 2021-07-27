@@ -32,6 +32,7 @@ const useStyles = makeStyles((theme) => ({
 const Home = ({ darkMode, setDarkMode }) => {
     const [res, setRes] = React.useState([])
     const bufferFiles = React.useRef([])
+    const bufferLoaded = React.useRef(false)
     const [showOut, setShowOut] = React.useState(false)
 
     const [branch, setbranch] = React.useState('Choose')
@@ -47,43 +48,49 @@ const Home = ({ darkMode, setDarkMode }) => {
         let sName = name.toLowerCase()
         let nfCount = 0
         let resCount = 0
-        const worker = new Worker()
-        bufferFiles.current.map(async (v, i) => {
-            worker.postMessage({
-                name: sName,
-                branch: branch,
-                file: v,
-                command: 'run',
-                sem: i + 1,
-            })
-        })
+        let loop = true
+        while (loop) {
+            if (bufferLoaded.current) {
+                loop = false
+                const worker = new Worker()
+                bufferFiles.current.map(async (v, i) => {
+                    worker.postMessage({
+                        name: sName,
+                        branch: branch,
+                        file: v,
+                        command: 'run',
+                        sem: i + 1,
+                    })
+                })
 
-        worker.onmessage = async (e) => {
-            //console.log(e.data)
-            setload(false)
-            if (e.data === 'nf') {
-                nfCount++
-                resCount++
-                if (nfCount === 3) {
-                    await setRes('nf')
-                    worker.terminate()
-                    await setTimeout(() => setRes([]), 4000)
-                }
-            } else {
-                await setRes((prevState) => [...prevState, e.data[0]])
-                await setShowOut(true)
-                resCount++
-                if (resCount === excelfiles.length) {
-                    let tmp_total = {
-                        sem: 'Total :',
-                        marks: `${e.data[1][0]} / ${e.data[1][1]}`,
-                        percentage: (
-                            (e.data[1][0] / e.data[1][1]) *
-                            100
-                        ).toFixed(4),
+                worker.onmessage = async (e) => {
+                    //console.log(e.data)
+                    setload(false)
+                    if (e.data === 'nf') {
+                        nfCount++
+                        resCount++
+                        if (nfCount === 3) {
+                            await setRes('nf')
+                            worker.terminate()
+                            await setTimeout(() => setRes([]), 4000)
+                        }
+                    } else {
+                        await setRes((prevState) => [...prevState, e.data[0]])
+                        await setShowOut(true)
+                        resCount++
+                        if (resCount === excelfiles.length) {
+                            let tmp_total = {
+                                sem: 'Total :',
+                                marks: `${e.data[1][0]} / ${e.data[1][1]}`,
+                                percentage: (
+                                    (e.data[1][0] / e.data[1][1]) *
+                                    100
+                                ).toFixed(4),
+                            }
+                            setRes((prevState) => [...prevState, tmp_total])
+                            worker.terminate()
+                        }
                     }
-                    setRes((prevState) => [...prevState, tmp_total])
-                    worker.terminate()
                 }
             }
         }
@@ -112,13 +119,22 @@ const Home = ({ darkMode, setDarkMode }) => {
     })
 
     React.useEffect(() => {
-        Promise.all(
-            excelfiles.map(async (v, i) => {
-                let response = await fetch(v)
-                let buffer = await response.arrayBuffer()
-                bufferFiles.current = [...bufferFiles.current, buffer]
-            }),
-        )
+        const makeBuffer = async () => {
+            const responses = await Promise.all(
+                excelfiles.map(async (v) => {
+                    let response = await fetch(v)
+                    return response
+                }),
+            )
+            bufferFiles.current = await Promise.all(
+                responses.map(async (response) => {
+                    let buffer = response.arrayBuffer()
+                    return buffer
+                }),
+            )
+            bufferLoaded.current = true
+        }
+        makeBuffer()
     }, [])
 
     return (
