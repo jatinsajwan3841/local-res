@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }))
 
-const Home = ({ darkMode, setDarkMode }) => {
+const Home = ({ darkMode, setDarkMode, update }) => {
     const [res, setRes] = React.useState([])
     const bufferFiles = React.useRef([])
     const bufferLoaded = React.useRef(false)
@@ -43,6 +43,7 @@ const Home = ({ darkMode, setDarkMode }) => {
 
     const submit = async (e) => {
         e.preventDefault()
+        if (branch === 'Choose') return
         setload(true)
         await setRes([])
         let sName = name.toLowerCase()
@@ -150,6 +151,28 @@ const Home = ({ darkMode, setDarkMode }) => {
                 color="primary"
                 style={{ position: 'absolute', right: 0 }}
             />
+            {update === 'fInstall' && (
+                <Snackbar
+                    anchorOrigin={{
+                        vertical: 'top',
+                        horizontal: 'center',
+                    }}
+                    open={true}
+                >
+                    <SnackbarContent message="Now available for offline usage, can install/add to home screen from browser drawer." />
+                </Snackbar>
+            )}
+            {update === 'update' && (
+                <Snackbar
+                    anchorOrigin={{
+                        vertical: 'top',
+                        horizontal: 'center',
+                    }}
+                    open={true}
+                >
+                    <SnackbarContent message="Update available, refresh page for updated content, can install/add to home screen from browser drawer." />
+                </Snackbar>
+            )}
             {!showOut ? (
                 <>
                     {load && <Load />}
@@ -161,16 +184,15 @@ const Home = ({ darkMode, setDarkMode }) => {
                             }}
                             open={res === 'nf'}
                         >
-                            <SnackbarContent
-                                style={{ backgroundColor: 'rgba(255,0,0,0.7)' }}
-                                message="The entered data didn't matched, please try again !"
-                            />
+                            <SnackbarContent message="The entered data didn't matched, please try again !" />
                         </Snackbar>
                         <h2 className={classes.beg}> Hello {name}</h2>
                         <p>
-                            This is a <s>Django</s> Web worker - Reactjs based
-                            PWA where anyone from the batch 2018-22 can have a
-                            quick reference of their academic performance.
+                            This is a Web worker - Reactjs based PWA where
+                            anyone from the batch 2018-22 can have a quick
+                            reference of their academic performance.
+                            <br />
+                            It will work offline too and is installable.
                         </p>
                         <form className={classes.form} onSubmit={submit}>
                             <TextField
