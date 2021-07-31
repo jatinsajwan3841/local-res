@@ -79,7 +79,21 @@ const Home = ({ darkMode, setDarkMode, update }) => {
                         await setRes((prevState) => [...prevState, e.data[0]])
                         await setShowOut(true)
                         resCount++
-                        if (resCount === excelfiles.length) {
+                        if (
+                            branch === 'ME' &&
+                            resCount === excelfiles.length - 1
+                        ) {
+                            let tmp_total = {
+                                sem: 'Total :',
+                                marks: `${e.data[1][0]} / ${e.data[1][1]}`,
+                                percentage: (
+                                    (e.data[1][0] / e.data[1][1]) *
+                                    100
+                                ).toFixed(4),
+                            }
+                            setRes((prevState) => [...prevState, tmp_total])
+                            worker.terminate()
+                        } else if (resCount === excelfiles.length) {
                             let tmp_total = {
                                 sem: 'Total :',
                                 marks: `${e.data[1][0]} / ${e.data[1][1]}`,
