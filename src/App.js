@@ -16,11 +16,11 @@ const App = () => {
         serviceWorkerRegistration.register({
             onSuccess: async () => {
                 await setUpdate('fInstall')
-                await setTimeout(() => setUpdate(''), 9000)
+                await setTimeout(() => setUpdate(''), 4000)
             },
             onUpdate: async () => {
                 await setUpdate('update')
-                await setTimeout(() => setUpdate(''), 9000)
+                await setTimeout(() => setUpdate(''), 4000)
             },
         })
     }, [])
