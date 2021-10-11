@@ -31,81 +31,82 @@ const useStyles = makeStyles((theme) => ({
 
 const Home = ({ darkMode, setDarkMode, update }) => {
     const [res, setRes] = React.useState([])
-    const bufferFiles = React.useRef([])
-    const bufferLoaded = React.useRef(false)
+    const [found, setFound] = React.useState(true)
     const [showOut, setShowOut] = React.useState(false)
-
     const [branch, setbranch] = React.useState('Choose')
     const [name, setname] = React.useState('')
     const [brer, setbrer] = React.useState(false)
     const [load, setload] = React.useState(false)
+
+    const bufferFiles = React.useRef([])
+    const promiseResolve = React.useRef(null)
+    const bufferLoaded = React.useRef(
+        new Promise((resolve) => (promiseResolve.current = resolve)),
+    )
+
     const classes = useStyles()
 
     const submit = async (e) => {
         e.preventDefault()
         if (branch === 'Choose') return
         setload(true)
-        await setRes([])
+        setRes([])
+        setFound(true)
         let sName = name.toLowerCase()
         let nfCount = 0
         let resCount = 0
-        let loop = true
-        while (loop) {
-            if (bufferLoaded.current) {
-                loop = false
-                const worker = new Worker()
-                bufferFiles.current.map(async (v, i) => {
-                    worker.postMessage({
-                        name: sName,
-                        branch: branch,
-                        file: v,
-                        command: 'run',
-                        sem: i + 1,
-                    })
-                })
+        await bufferLoaded.current
+        const worker = new Worker()
+        bufferFiles.current.map(async (v, i) => {
+            worker.postMessage({
+                name: sName,
+                branch: branch,
+                file: v,
+                command: 'run',
+                sem: i + 1,
+            })
+        })
 
-                worker.onmessage = async (e) => {
-                    //console.log(e.data)
+        worker.onmessage = async (e) => {
+            if (e.data === 'nf') {
+                nfCount++
+                resCount++
+                if (nfCount === 3) {
                     setload(false)
-                    if (e.data === 'nf') {
-                        nfCount++
-                        resCount++
-                        if (nfCount === 3) {
-                            await setRes('nf')
-                            worker.terminate()
-                            await setTimeout(() => setRes([]), 4000)
-                        }
-                    } else {
-                        await setRes((prevState) => [...prevState, e.data[0]])
-                        await setShowOut(true)
-                        resCount++
-                        if (
-                            branch === 'ME' &&
-                            resCount === excelfiles.length - 1
-                        ) {
-                            let tmp_total = {
-                                sem: 'Total :',
-                                marks: `${e.data[1][0]} / ${e.data[1][1]}`,
-                                percentage: (
-                                    (e.data[1][0] / e.data[1][1]) *
-                                    100
-                                ).toFixed(4),
-                            }
-                            setRes((prevState) => [...prevState, tmp_total])
-                            worker.terminate()
-                        } else if (resCount === excelfiles.length) {
-                            let tmp_total = {
-                                sem: 'Total :',
-                                marks: `${e.data[1][0]} / ${e.data[1][1]}`,
-                                percentage: (
-                                    (e.data[1][0] / e.data[1][1]) *
-                                    100
-                                ).toFixed(4),
-                            }
-                            setRes((prevState) => [...prevState, tmp_total])
-                            worker.terminate()
-                        }
+                    await setFound(false)
+                    worker.terminate()
+                    setTimeout(() => {
+                        setFound(true)
+                    }, 4000)
+                }
+            } else {
+                await setRes((prevState) => [...prevState, e.data[0]])
+                await setShowOut(true)
+                resCount++
+                if (branch === 'ME' && resCount === excelfiles.length - 1) {
+                    let tmp_total = {
+                        sem: 'Total :',
+                        marks: `${e.data[1][0]} / ${e.data[1][1]}`,
+                        percentage: (
+                            (e.data[1][0] / e.data[1][1]) *
+                            100
+                        ).toFixed(4),
                     }
+                    setload(false)
+                    setRes((prevState) => [...prevState, tmp_total])
+                    worker.terminate()
+                } else if (resCount === excelfiles.length) {
+                    let tmp_total = {
+                        sem: 'Total :',
+                        marks: `${e.data[1][0]} / ${e.data[1][1]}`,
+                        percentage: (
+                            (e.data[1][0] / e.data[1][1]) *
+                            100
+                        ).toFixed(4),
+                    }
+                    setload(false)
+                    setRes((prevState) => [...prevState, tmp_total])
+                    worker.terminate()
                 }
             }
         }
@@ -134,7 +135,7 @@ const Home = ({ darkMode, setDarkMode, update }) => {
     })
 
     React.useEffect(() => {
-        const makeBuffer = async () => {
+        const makeBuffer = async (resolveP) => {
             const responses = await Promise.all(
                 excelfiles.map(async (v) => {
                     let response = await fetch(v)
@@ -147,9 +148,9 @@ const Home = ({ darkMode, setDarkMode, update }) => {
                     return buffer
                 }),
             )
-            bufferLoaded.current = true
+            resolveP()
         }
-        makeBuffer()
+        makeBuffer(promiseResolve.current)
     }, [])
 
     return (
@@ -187,16 +188,16 @@ const Home = ({ darkMode, setDarkMode, update }) => {
                     <SnackbarContent message="Update available, refresh page for updated content, can install/add to home screen from browser drawer." />
                 </Snackbar>
             )}
+            {load && <Load />}
             {!showOut ? (
                 <>
-                    {load && <Load />}
                     <Container maxWidth="sm">
                         <Snackbar
                             anchorOrigin={{
                                 vertical: 'top',
                                 horizontal: 'center',
                             }}
-                            open={res === 'nf'}
+                            open={!found}
                         >
                             <SnackbarContent message="The entered data didn't matched, please try again !" />
                         </Snackbar>
