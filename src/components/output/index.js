@@ -8,9 +8,20 @@ import TableRow from '@material-ui/core/TableRow'
 import Container from '@material-ui/core/Container'
 import Button from '@material-ui/core/Button'
 import HomeIcon from '@material-ui/icons/Home'
+import BookmarkBorderIcon from '@material-ui/icons/BookmarkBorder'
+import BackspaceIcon from '@material-ui/icons/Backspace'
 import LineChart from '../chart'
 
-const Output = ({ name, data, reset, darkMode }) => {
+const Output = ({
+    name,
+    data,
+    load,
+    reset,
+    darkMode,
+    savedLoad,
+    handleFav,
+    favDel,
+}) => {
     return (
         <Container maxWidth="md">
             <Button
@@ -19,9 +30,35 @@ const Output = ({ name, data, reset, darkMode }) => {
                 style={{ marginTop: 6 }}
                 startIcon={<HomeIcon />}
                 onClick={reset}
+                size="small"
             >
                 Home
             </Button>
+            {savedLoad === 'No' ? (
+                <Button
+                    variant="contained"
+                    color="secondary"
+                    style={{ marginTop: 6, marginLeft: 6 }}
+                    startIcon={<BookmarkBorderIcon />}
+                    onClick={handleFav}
+                    disabled={load}
+                    size="small"
+                >
+                    Save
+                </Button>
+            ) : (
+                <Button
+                    variant="contained"
+                    color="secondary"
+                    style={{ marginTop: 6, marginLeft: 6 }}
+                    startIcon={<BackspaceIcon />}
+                    onClick={() => favDel(savedLoad)}
+                    disabled={load}
+                    size="small"
+                >
+                    Del
+                </Button>
+            )}
             <h2 style={{ marginTop: 6 }}> Hello {name}</h2>
             <TableContainer component={Container}>
                 <Table size="small">

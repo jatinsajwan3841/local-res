@@ -49,9 +49,17 @@ const LineChart = ({ data, darkMode }) => {
     }, [data])
 
     React.useEffect(() => {
-        const labeldata = [data[0].sem]
-        const datadata = [data[0].percentage]
-        const total_array = []
+        const labeldata = data.map((i) => {
+            return i.sem
+        })
+        const datadata = data.map((i) => {
+            return i.percentage
+        })
+        labeldata.pop()
+        datadata.pop()
+        const total_array = [...Array(data.length)].fill(
+            data[data.length - 1].percentage,
+        )
 
         targetChartRef.current = new Chart(chartRef.current.getContext('2d'), {
             type: 'line',

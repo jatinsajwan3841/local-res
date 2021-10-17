@@ -13,6 +13,8 @@ import SnackbarContent from '@material-ui/core/SnackbarContent'
 import DoubleArrowIcon from '@material-ui/icons/DoubleArrow'
 import { excelfiles, branches } from '../constant'
 import Output from '../output'
+import Favourite from '../favourite'
+import useStickyState from '../localState'
 import { createTheme, ThemeProvider } from '@material-ui/core/styles'
 
 const useStyles = makeStyles((theme) => ({
@@ -37,76 +39,102 @@ const Home = ({ darkMode, setDarkMode, update }) => {
     const [name, setname] = React.useState('')
     const [brer, setbrer] = React.useState(false)
     const [load, setload] = React.useState(false)
+    const [saved, setSaved] = useStickyState([], 'favourite')
+    const [savedLoad, setSavedLoad] = React.useState('No')
 
     const bufferFiles = React.useRef([])
     const promiseResolve = React.useRef(null)
     const bufferLoaded = React.useRef(
         new Promise((resolve) => (promiseResolve.current = resolve)),
     )
+    const details = React.useRef(['', 'Choose'])
 
     const classes = useStyles()
 
     const submit = async (e) => {
-        e.preventDefault()
-        if (branch === 'Choose') return
-        setload(true)
-        setRes([])
-        setFound(true)
-        let sName = name.toLowerCase()
-        let nfCount = 0
-        let resCount = 0
-        await bufferLoaded.current
-        const worker = new Worker()
-        bufferFiles.current.map(async (v, i) => {
-            worker.postMessage({
-                name: sName,
-                branch: branch,
-                file: v,
-                command: 'run',
-                sem: i + 1,
+        try {
+            e.preventDefault()
+            setSavedLoad('No')
+        } catch {
+            var updateLoc = e
+            setSavedLoad(updateLoc)
+        } finally {
+            if (details.current[1] === 'Choose') return
+            setload(true)
+            setRes([])
+            setFound(true)
+            let sName = details.current[0].toLowerCase()
+            let nfCount = 0
+            let resCount = 0
+            await bufferLoaded.current
+            const worker = new Worker()
+            bufferFiles.current.map(async (v, i) => {
+                worker.postMessage({
+                    name: sName,
+                    branch: details.current[1],
+                    file: v,
+                    command: 'run',
+                    sem: i + 1,
+                })
             })
-        })
 
-        worker.onmessage = async (e) => {
-            if (e.data === 'nf') {
-                nfCount++
-                resCount++
-                if (nfCount === 3) {
-                    setload(false)
-                    await setFound(false)
-                    worker.terminate()
-                    setTimeout(() => {
-                        setFound(true)
-                    }, 4000)
-                }
-            } else {
-                await setRes((prevState) => [...prevState, e.data[0]])
-                await setShowOut(true)
-                resCount++
-                if (branch === 'ME' && resCount === excelfiles.length - 1) {
-                    let tmp_total = {
-                        sem: 'Total :',
-                        marks: `${e.data[1][0]} / ${e.data[1][1]}`,
-                        percentage: (
-                            (e.data[1][0] / e.data[1][1]) *
-                            100
-                        ).toFixed(4),
+            worker.onmessage = async (e) => {
+                if (e.data === 'nf') {
+                    nfCount++
+                    resCount++
+                    if (nfCount === 3) {
+                        setload(false)
+                        await setFound(false)
+                        worker.terminate()
+                        setTimeout(() => {
+                            setFound(true)
+                        }, 4000)
                     }
-                    setload(false)
-                    setRes((prevState) => [...prevState, tmp_total])
-                    worker.terminate()
-                } else if (resCount === excelfiles.length) {
-                    let tmp_total = {
-                        sem: 'Total :',
-                        marks: `${e.data[1][0]} / ${e.data[1][1]}`,
-                        percentage: (
-                            (e.data[1][0] / e.data[1][1]) *
-                            100
-                        ).toFixed(4),
+                } else {
+                    await setRes((prevState) => [...prevState, e.data[0]])
+                    await setShowOut(true)
+                    resCount++
+                    if (branch === 'ME' && resCount === excelfiles.length - 1) {
+                        let tmp_total = {
+                            sem: 'Total :',
+                            marks: `${e.data[1][0]} / ${e.data[1][1]}`,
+                            percentage: (
+                                (e.data[1][0] / e.data[1][1]) *
+                                100
+                            ).toFixed(4),
+                        }
+                        setload(false)
+                        setRes((prevState) => {
+                            try {
+                                let temp = [...saved]
+                                temp[updateLoc].data = [...prevState, tmp_total]
+                                setSaved(temp)
+                            } catch {}
+
+                            return [...prevState, tmp_total]
+                        })
+                        worker.terminate()
+                    } else if (resCount === excelfiles.length) {
+                        let tmp_total = {
+                            sem: 'Total :',
+                            marks: `${e.data[1][0]} / ${e.data[1][1]}`,
+                            percentage: (
+                                (e.data[1][0] / e.data[1][1]) *
+                                100
+                            ).toFixed(4),
+                        }
+                        setload(false)
+                        setRes((prevState) => {
+                            try {
+                                let temp = [...saved]
+                                temp[updateLoc].data = [...prevState, tmp_total]
+                                setSaved(temp)
+                            } catch {}
+
+                            return [...prevState, tmp_total]
+                        })
+                        worker.terminate()
                     }
-                    setload(false)
-                    setRes((prevState) => [...prevState, tmp_total])
-                    worker.terminate()
                 }
             }
         }
@@ -114,12 +142,14 @@ const Home = ({ darkMode, setDarkMode, update }) => {
 
     const handleBranch = (event) => {
         setbranch(event.target.value)
+        details.current[1] = event.target.value
         if (event.target.value === 'Choose') setbrer(true)
         else setbrer(false)
     }
 
     const handleNaam = (event) => {
         setname(event.target.value)
+        details.current[0] = event.target.value
     }
 
     const reset = () => {
@@ -128,11 +158,55 @@ const Home = ({ darkMode, setDarkMode, update }) => {
         setShowOut(false)
     }
 
+    const handleFav = () => {
+        let temp = {
+            name: details.current[0],
+            branch: details.current[1],
+            data: res,
+        }
+        setSaved((prev) => [...prev, temp])
+        setSavedLoad(saved.length)
+    }
+
+    const favDel = (i) => {
+        let temp = [...saved]
+        temp.splice(i, 1)
+        setSaved(temp)
+        setSavedLoad('No')
+    }
+
+    const favShow = async (i) => {
+        if (saved[i].data === 'update') {
+            details.current = [saved[i].name, saved[i].branch]
+            submit(i)
+        } else {
+            setSavedLoad(i)
+            setRes(saved[i].data)
+            details.current = [saved[i].name, saved[i].branch]
+            setname(saved[i].name)
+            setShowOut(true)
+        }
+    }
+
     const theme = createTheme({
         palette: {
             type: darkMode ? 'dark' : 'light',
         },
     })
+
+    React.useEffect(() => {
+        if (update === 'update' && saved.length !== 0) {
+            let temp = []
+            saved.map((v) => {
+                let t1 = {
+                    ...v,
+                    data: 'update',
+                }
+                temp.push(t1)
+            })
+            setSaved(temp)
+        }
+    }, [update])
 
     React.useEffect(() => {
         const makeBuffer = async (resolveP) => {
@@ -271,14 +345,23 @@ const Home = ({ darkMode, setDarkMode, update }) => {
                                 </Button>
                             </center>
                         </form>
+                        <Favourite
+                            saved={saved}
+                            favShow={favShow}
+                            favDel={favDel}
+                        />
                     </Container>
                 </>
             ) : (
                 <Output
-                    name={name}
+                    name={details.current[0]}
                     data={res}
+                    load={load}
                     reset={reset}
                     darkMode={darkMode}
+                    savedLoad={savedLoad}
+                    handleFav={handleFav}
+                    favDel={favDel}
                 />
             )}
         </ThemeProvider>
