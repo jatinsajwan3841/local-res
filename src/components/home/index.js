@@ -156,6 +156,7 @@ const Home = ({ darkMode, setDarkMode, update }) => {
         setname('')
         setbranch('Choose')
         setShowOut(false)
+        details.current = ['', 'Choose']
     }
 
     const handleFav = () => {
