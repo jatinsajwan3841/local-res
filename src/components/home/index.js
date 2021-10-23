@@ -11,7 +11,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import Snackbar from '@material-ui/core/Snackbar'
 import SnackbarContent from '@material-ui/core/SnackbarContent'
 import DoubleArrowIcon from '@material-ui/icons/DoubleArrow'
-import { excelfiles, branches } from '../constant'
+import { EXCELFILES, BRANCHES } from '../constant'
 import Output from '../output'
 import Favourite from '../favourite'
 import useStickyState from '../localState'
@@ -103,7 +103,7 @@ const Home = ({ darkMode, setDarkMode, update }) => {
                     await setRes((prevState) => [...prevState, e.data[0]])
                     await setShowOut(true)
                     resCount++
-                    if (resCount === excelfiles.length) {
+                    if (resCount === EXCELFILES.length) {
                         let tmp_total = {
                             sem: 'Total :',
                             marks: `${e.data[1][0]} / ${e.data[1][1]}`,
@@ -207,7 +207,7 @@ const Home = ({ darkMode, setDarkMode, update }) => {
     React.useEffect(() => {
         const makeBuffer = async (resolveP) => {
             const responses = await Promise.all(
-                excelfiles.map(async (v) => {
+                EXCELFILES.map(async (v) => {
                     let response = await fetch(v)
                     return response
                 }),
@@ -236,28 +236,22 @@ const Home = ({ darkMode, setDarkMode, update }) => {
                 color="primary"
                 style={{ position: 'absolute', right: 0 }}
             />
-            {update === 'fInstall' && (
-                <Snackbar
-                    anchorOrigin={{
-                        vertical: 'top',
-                        horizontal: 'center',
-                    }}
-                    open={true}
-                >
-                    <SnackbarContent message="Now available for offline usage, can install/add to home screen from browser drawer." />
-                </Snackbar>
-            )}
-            {update === 'update' && (
-                <Snackbar
-                    anchorOrigin={{
-                        vertical: 'top',
-                        horizontal: 'center',
-                    }}
-                    open={true}
-                >
-                    <SnackbarContent message="Update available, refresh page for updated content, can install/add to home screen from browser drawer." />
-                </Snackbar>
-            )}
+            <Snackbar
+                anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'center',
+                }}
+                open={update !== ''}
+            >
+                <SnackbarContent
+                    message={`${
+                        update === 'fInstall'
+                            ? 'Now available for offline usage, can install/add to home screen from browser drawer.'
+                            : 'Update available, refresh page for updated content, can install/add to home screen from browser drawer.'
+                    }`}
+                />
+            </Snackbar>
+
             {load && <Load />}
             {!showOut ? (
                 <>
@@ -294,7 +288,7 @@ const Home = ({ darkMode, setDarkMode, update }) => {
                                 value={branch}
                                 onChange={handleBranch}
                             >
-                                {branches.map((option) => (
+                                {BRANCHES.map((option) => (
                                     <MenuItem
                                         key={option.value}
                                         value={option.value}

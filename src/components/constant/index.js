@@ -1,4 +1,4 @@
-export const branches = [
+export const BRANCHES = [
     {
         value: 'Choose',
         label: 'Choose',
@@ -29,7 +29,7 @@ export const branches = [
     },
 ]
 
-export const excelfiles = [
+export const EXCELFILES = [
     'dat/B. TECH. I SEM DEC 18.xlsx',
     'dat/B. TECH. II SEM JUNE 2019.xlsx',
     'dat/B. TECH. III SEM DECEMBER 2019.xlsx',
