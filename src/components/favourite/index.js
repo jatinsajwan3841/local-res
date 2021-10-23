@@ -8,7 +8,7 @@ const Favourite = ({ saved, favShow, favDel }) => {
         <div>
             <Chip avatar={<BookmarkBorderIcon />} label={'Saved :'} />
             <ul>
-                {saved.length == 0
+                {saved.length === 0
                     ? 'None, try saving for faster visits! ╰(*°▽°*)╯'
                     : saved.map((v, i) => (
                           <li key={i}>

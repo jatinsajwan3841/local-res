@@ -5,6 +5,7 @@ import Home from './components/home'
 import ParticlesBg from 'particles-bg'
 import Footer from './components/footer'
 import useStickyState from './components/localState'
+import { BrowserRouter as Router } from 'react-router-dom'
 import './App.css'
 
 const App = () => {
@@ -30,11 +31,13 @@ const App = () => {
             style={{ minHeight: height }}
         >
             <div className="home">
-                <Home
-                    darkMode={darkMode}
-                    setDarkMode={setDarkMode}
-                    update={update}
-                />
+                <Router>
+                    <Home
+                        darkMode={darkMode}
+                        setDarkMode={setDarkMode}
+                        update={update}
+                    />
+                </Router>
             </div>
             <ParticlesBg type="cobweb" num="30" color="#a6a4ad" />
             <Footer />

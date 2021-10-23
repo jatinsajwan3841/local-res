@@ -15,6 +15,7 @@ import { excelfiles, branches } from '../constant'
 import Output from '../output'
 import Favourite from '../favourite'
 import useStickyState from '../localState'
+import { useHistory, useLocation } from 'react-router-dom'
 import { createTheme, ThemeProvider } from '@material-ui/core/styles'
 
 const useStyles = makeStyles((theme) => ({
@@ -49,7 +50,15 @@ const Home = ({ darkMode, setDarkMode, update }) => {
     )
     const details = React.useRef(['', 'Choose'])
 
+    let history = useHistory()
+    let location = useLocation()
     const classes = useStyles()
+
+    const theme = createTheme({
+        palette: {
+            type: darkMode ? 'dark' : 'light',
+        },
+    })
 
     const submit = async (e) => {
         try {
@@ -189,11 +198,17 @@ const Home = ({ darkMode, setDarkMode, update }) => {
         }
     }
 
-    const theme = createTheme({
-        palette: {
-            type: darkMode ? 'dark' : 'light',
-        },
-    })
+    React.useEffect(() => {
+        if (showOut && history.location.hash === '') {
+            history.push({ hash: 'res' })
+        }
+    }, [showOut])
+
+    React.useEffect(() => {
+        if (location.pathname === '/' && location.hash !== '#res') {
+            reset()
+        }
+    }, [location])
 
     React.useEffect(() => {
         if (update === 'update' && saved.length !== 0) {
@@ -363,6 +378,7 @@ const Home = ({ darkMode, setDarkMode, update }) => {
                     savedLoad={savedLoad}
                     handleFav={handleFav}
                     favDel={favDel}
+                    back={history.goBack}
                 />
             )}
         </ThemeProvider>

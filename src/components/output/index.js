@@ -21,6 +21,7 @@ const Output = ({
     savedLoad,
     handleFav,
     favDel,
+    back,
 }) => {
     return (
         <Container maxWidth="md">
@@ -29,7 +30,10 @@ const Output = ({
                 color="primary"
                 style={{ marginTop: 6 }}
                 startIcon={<HomeIcon />}
-                onClick={reset}
+                onClick={() => {
+                    back()
+                    reset()
+                }}
                 size="small"
             >
                 Home
