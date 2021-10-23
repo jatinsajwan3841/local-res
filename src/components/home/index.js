@@ -185,7 +185,7 @@ const Home = ({ darkMode, setDarkMode, update }) => {
     }, [showOut])
 
     React.useEffect(() => {
-        if (location.pathname === '/' && location.hash !== '#res') {
+        if (location.pathname === '/local-res/' && location.hash !== '#res') {
             reset()
         }
     }, [location])
