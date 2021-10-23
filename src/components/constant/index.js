@@ -34,6 +34,6 @@ export const excelfiles = [
     'dat/B. TECH. II SEM JUNE 2019.xlsx',
     'dat/B. TECH. III SEM DECEMBER 2019.xlsx',
     'dat/B. TECH. IV SEM DECEMBER 2020.xlsx',
-    'dat/B. TECH. V SEM (Except ME) DECEMBER 2020 .xlsx',
+    'dat/B. TECH. V SEM DECEMBER 2020 (COVID19 ).xlsx',
     'dat/B. TECH. VI SEM JUNE 2021 (COVID 19 ).xlsx',
 ]
