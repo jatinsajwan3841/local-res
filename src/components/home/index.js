@@ -11,6 +11,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import Snackbar from '@material-ui/core/Snackbar'
 import SnackbarContent from '@material-ui/core/SnackbarContent'
 import DoubleArrowIcon from '@material-ui/icons/DoubleArrow'
+import HelpIcon from '@material-ui/icons/Help'
 import { EXCELFILES, BRANCHES } from '../constant'
 import Output from '../output'
 import Favourite from '../favourite'
@@ -355,6 +356,13 @@ const Home = ({ darkMode, setDarkMode, update }) => {
                     back={history.goBack}
                 />
             )}
+            <a
+                href="https://forms.gle/ZRHk4sxci4nagY8w7"
+                className="anomaly"
+                target="_blank"
+            >
+                <HelpIcon />
+            </a>
         </ThemeProvider>
     )
 }
