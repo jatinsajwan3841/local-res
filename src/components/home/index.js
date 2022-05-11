@@ -43,6 +43,8 @@ const Home = ({ darkMode, setDarkMode, update }) => {
     const [load, setload] = React.useState(false)
     const [saved, setSaved] = useStickyState([], 'favourite')
     const [savedLoad, setSavedLoad] = React.useState('No')
+    const [meritList, setMeritList] = React.useState(false)
+    const [year, setYear] = React.useState(0)
 
     const bufferFiles = React.useRef([])
     const promiseResolve = React.useRef(null)
@@ -50,6 +52,7 @@ const Home = ({ darkMode, setDarkMode, update }) => {
         new Promise((resolve) => (promiseResolve.current = resolve)),
     )
     const details = React.useRef(['', 'Choose'])
+    const yearTotal = React.useRef(0)
 
     let history = useHistory()
     let location = useLocation()
@@ -73,6 +76,10 @@ const Home = ({ darkMode, setDarkMode, update }) => {
             setload(true)
             setRes([])
             setFound(true)
+            if (meritList) {
+                meritSubmit()
+                return
+            }
             let sName = details.current[0].toLowerCase()
             let nfCount = 0
             let resCount = 0
@@ -126,6 +133,46 @@ const Home = ({ darkMode, setDarkMode, update }) => {
                         worker.terminate()
                     }
                 }
+            }
+        }
+    }
+
+    const meritSubmit = async () => {
+        await bufferLoaded.current
+        const worker = new Worker()
+
+        const years = { 0: [0, 1], 1: [2, 3], 2: [4, 5], 3: [6, 7] }
+
+        let files = []
+        if (bufferFiles.current[years[year][1]]) {
+            files = [
+                bufferFiles.current[years[year][0]],
+                bufferFiles.current[years[year][1]],
+            ]
+        } else {
+            files = [bufferFiles.current[years[year][0]]]
+        }
+
+        files.map((f, i) =>
+            worker.postMessage({
+                branch: details.current[1],
+                file: f,
+                command: 'merit',
+                sem: i,
+            }),
+        )
+        let cnt = 0
+        worker.onmessage = async (e) => {
+            cnt++
+            if (cnt == files.length) {
+                const sortedList = Object.entries(e.data[0]).sort(
+                    (a, b) => b[1] - a[1],
+                )
+                yearTotal.current = e.data[1]
+                await setRes(sortedList)
+                await setShowOut(true)
+                setload(false)
+                worker.terminate()
             }
         }
     }
@@ -275,6 +322,18 @@ const Home = ({ darkMode, setDarkMode, update }) => {
                             It will work offline too and is installable.
                         </p>
                         <form className={classes.form} onSubmit={submit}>
+                            <FormControlLabel
+                                control={
+                                    <Switch
+                                        checked={meritList}
+                                        onChange={() =>
+                                            setMeritList(!meritList)
+                                        }
+                                    />
+                                }
+                                label="Merit List"
+                                color="secondary"
+                            />
                             <TextField
                                 name="branch"
                                 error={brer}
@@ -299,29 +358,64 @@ const Home = ({ darkMode, setDarkMode, update }) => {
                                 ))}
                             </TextField>
 
-                            {branch !== 'Choose' && (
-                                <TextField
-                                    style={{ marginTop: '10px' }}
-                                    type={branch === 'CE' ? 'number' : 'text'}
-                                    required
-                                    fullWidth
-                                    name="name"
-                                    inputProps={
-                                        branch === 'CE'
-                                            ? { min: '180500' }
-                                            : { minLength: '2' }
-                                    }
-                                    label={
-                                        branch === 'CE' ? 'College-ID' : 'Name'
-                                    }
-                                    helperText={
-                                        branch === 'CE'
-                                            ? 'Please enter your College-ID'
-                                            : 'Please enter your full name'
-                                    }
-                                    onInput={handleNaam}
-                                />
-                            )}
+                            {branch !== 'Choose' &&
+                                (meritList === false ? (
+                                    <TextField
+                                        style={{ marginTop: '10px' }}
+                                        type={
+                                            branch === 'CE' ? 'number' : 'text'
+                                        }
+                                        required
+                                        fullWidth
+                                        name="name"
+                                        inputProps={
+                                            branch === 'CE'
+                                                ? { min: '180500' }
+                                                : { minLength: '2' }
+                                        }
+                                        label={
+                                            branch === 'CE'
+                                                ? 'College-ID'
+                                                : 'Name'
+                                        }
+                                        helperText={
+                                            branch === 'CE'
+                                                ? 'Please enter your College-ID'
+                                                : 'Please enter your full name'
+                                        }
+                                        onInput={handleNaam}
+                                    />
+                                ) : (
+                                    <TextField
+                                        style={{ marginTop: '10px' }}
+                                        name="year"
+                                        error={brer}
+                                        select
+                                        label="year"
+                                        fullWidth
+                                        helperText={
+                                            brer
+                                                ? 'please choose correct year'
+                                                : 'please choose year'
+                                        }
+                                        value={year}
+                                        onChange={(e) =>
+                                            setYear(e.target.value)
+                                        }
+                                    >
+                                        {EXCELFILES.map(
+                                            (val, ind) =>
+                                                ind < 4 && (
+                                                    <MenuItem
+                                                        key={ind}
+                                                        value={ind}
+                                                    >
+                                                        {ind + 1}
+                                                    </MenuItem>
+                                                ),
+                                        )}
+                                    </TextField>
+                                ))}
 
                             <center>
                                 <Button
@@ -354,6 +448,9 @@ const Home = ({ darkMode, setDarkMode, update }) => {
                     handleFav={handleFav}
                     favDel={favDel}
                     back={history.goBack}
+                    year={year}
+                    meritList={meritList}
+                    yearTotal={yearTotal.current}
                 />
             )}
             <a

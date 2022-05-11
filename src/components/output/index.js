@@ -22,7 +22,12 @@ const Output = ({
     handleFav,
     favDel,
     back,
+    year,
+    meritList,
+    yearTotal,
 }) => {
+    let n = ++year
+    n += [, 'st', 'nd', 'rd'][(n % 100 >> 3) ^ 1 && n % 10] || 'th'
     return (
         <Container maxWidth="md">
             <Button
@@ -38,45 +43,62 @@ const Output = ({
             >
                 Home
             </Button>
-            {savedLoad === 'No' ? (
-                <Button
-                    variant="contained"
-                    color="secondary"
-                    style={{ marginTop: 6, marginLeft: 6 }}
-                    startIcon={<BookmarkBorderIcon />}
-                    onClick={handleFav}
-                    disabled={load}
-                    size="small"
-                >
-                    Save
-                </Button>
+            {!meritList &&
+                (savedLoad === 'No' ? (
+                    <Button
+                        variant="contained"
+                        color="secondary"
+                        style={{ marginTop: 6, marginLeft: 6 }}
+                        startIcon={<BookmarkBorderIcon />}
+                        onClick={handleFav}
+                        disabled={load}
+                        size="small"
+                    >
+                        Save
+                    </Button>
+                ) : (
+                    <Button
+                        variant="contained"
+                        color="secondary"
+                        style={{ marginTop: 6, marginLeft: 6 }}
+                        startIcon={<BackspaceIcon />}
+                        onClick={() => favDel(savedLoad)}
+                        disabled={load}
+                        size="small"
+                    >
+                        Del
+                    </Button>
+                ))}
+            {meritList ? (
+                <h2 style={{ marginTop: 6 }}>
+                    {' '}
+                    Hello, {n} year Merit List is shown below
+                </h2>
             ) : (
-                <Button
-                    variant="contained"
-                    color="secondary"
-                    style={{ marginTop: 6, marginLeft: 6 }}
-                    startIcon={<BackspaceIcon />}
-                    onClick={() => favDel(savedLoad)}
-                    disabled={load}
-                    size="small"
-                >
-                    Del
-                </Button>
+                <h2 style={{ marginTop: 6 }}> Hello {name}</h2>
             )}
-            <h2 style={{ marginTop: 6 }}> Hello {name}</h2>
             <TableContainer component={Container}>
                 <Table size="small">
                     <TableHead>
                         <TableRow>
                             <TableCell align="center">
-                                <b>Sem</b>
+                                {meritList ? <b>Pos.</b> : <b>Sem</b>}
                             </TableCell>
                             <TableCell align="center">
-                                <b>Marks</b>
+                                {meritList ? <b>Name</b> : <b>Marks</b>}
                             </TableCell>
                             <TableCell align="center">
-                                <b>Percentage</b>
+                                {meritList ? (
+                                    <b>Marks(/{yearTotal})</b>
+                                ) : (
+                                    <b>Percentage</b>
+                                )}
                             </TableCell>
+                            {meritList && (
+                                <TableCell align="center">
+                                    <b>Percentage</b>
+                                </TableCell>
+                            )}
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -87,20 +109,28 @@ const Output = ({
                                     scope="row"
                                     align="center"
                                 >
-                                    {row.sem}
+                                    {meritList ? index + 1 : row.sem}
                                 </TableCell>
                                 <TableCell align="center">
-                                    {row.marks}
+                                    {meritList ? row[0] : row.marks}
                                 </TableCell>
                                 <TableCell align="center">
-                                    {row.percentage}%
+                                    {meritList ? row[1] : `${row.percentage}%`}
                                 </TableCell>
+                                {meritList && (
+                                    <TableCell align="center">
+                                        {((row[1] / yearTotal) * 100).toFixed(
+                                            4,
+                                        )}
+                                        %
+                                    </TableCell>
+                                )}
                             </TableRow>
                         ))}
                     </TableBody>
                 </Table>
             </TableContainer>
-            <LineChart data={data} darkMode={darkMode} />
+            {!meritList && <LineChart data={data} darkMode={darkMode} />}
         </Container>
     )
 }
