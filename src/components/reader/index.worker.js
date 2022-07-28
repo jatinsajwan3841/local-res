@@ -11,7 +11,7 @@ onmessage = (e) => {
         const wb = XLSX.read(data, { type: 'array' })
         const ws = wb.Sheets[e.data.branch]
         let range = XLSX.utils.decode_range(ws['!ref'])
-        for (let R = 7; R <= range.e.r; R++) {
+        nameFindLoop: for (let R = 7; R <= range.e.r; R++) {
             for (let C = 3; C <= 4; C++) {
                 let cell_address = { c: C, r: R }
                 let readable = ws[XLSX.utils.encode_cell(cell_address)]
@@ -20,6 +20,7 @@ onmessage = (e) => {
                     if (tmp === e.data.name) {
                         //console.log(readable, cell_address)
                         found = cell_address.r
+                        break nameFindLoop
                     }
                 } catch (e) {
                     //console.log(e)
@@ -27,7 +28,7 @@ onmessage = (e) => {
             }
         }
         if (found !== 'nf') {
-            for (let C = range.s.c; C <= range.e.c; C++) {
+            for (let C = range.e.c; C >= range.s.c; C--) {
                 let tmp_ca = { c: C, r: 3 }
                 let tmp_res = ws[XLSX.utils.encode_cell(tmp_ca)]
                 try {
@@ -50,6 +51,7 @@ onmessage = (e) => {
                         }
                         total[0] += semMarks
                         total[1] += max.v
+                        break
                     }
                 } catch (e) {
                     //console.log(e)
